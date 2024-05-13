@@ -1,0 +1,532 @@
+PennController.ResetPrefix(null);
+
+// DebuggOff();
+
+var progressBarText = "progress";
+
+var sendingResultsMessage = "Please, wait as we save your answers. This might take a while. Do not close the window, yet.";
+
+// SEQUENCE
+
+Sequence("counter",
+"icf",
+"welcomescreen",
+"questionnaire",
+"instructions1",
+"practice",
+"instructions2",
+rshuffle("target","distractor"),
+"finalscreen"
+);
+
+SetCounter("counter", "inc", 1);
+
+// SYNTAX TO CODE THE PARTICIPANT
+
+subjID = String.fromCharCode(65+Math.floor(Math.random() * 26)) + Math.floor((Math.random() * 200) + 1);
+
+// CODE TO RUN THE ICF
+
+newTrial("icf",
+         newHtml("icf", "icf.html")
+         .cssContainer({"padding-right":"10%","padding-left":"10%"}) 
+         .checkboxWarning("You need to give your consent before proceeding") 
+         .print() 
+         ,
+          newButton("next", "Click to proceed")
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .center()
+         .print()
+         .wait(getHtml("icf").test.complete() 
+               .failure(getHtml("icf").warn())) 
+);
+
+// WELCOME CODING
+
+newTrial("welcomescreen",
+         defaultText
+         .css("font-size", "25px")
+         .css("text-align", "justify")
+         .print()
+         ,
+         newText("Welcome to our experiment!")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> We thank your participation. </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> On the next screen, you will be invited to answer a linguistic questionnaire. Please click <b> 'Next' </b> to proceed with the questionnaire.<p> ")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newButton("Next")
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .css("text-align", "justify")
+         .center()
+         .print()
+         .wait()
+);
+
+// CÓDIGO PARA QUESTIONÁRIO
+
+newTrial("questionnaire",
+         defaultText
+         .print()
+         .cssContainer({"font-size":"25px"})
+         ,
+         newText("idade", "<b>1) How old are you? Type only the number than click <b>OK</b> for the next question to show up.</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newTextInput("idadeResposta", "")
+         .cssContainer({"margin-bottom":"1em"})
+         .css("font-size", "25px")
+         .lines(0)
+         .size(70, 30)
+         .log()
+         .print()
+         ,
+         newButton("botao1", "OK")
+         .cssContainer({"margin-bottom":"3em"})
+         .css("font-size", "20px")
+         .print()
+         .wait(getTextInput("idadeResposta") 
+               .test.text(/^(1[8-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-9])$/) 
+               .failure(
+                 newText("failure1","To participate in the study is required the minimun age of 18. Anyways, we thank your participation so far!")
+                 .cssContainer({"margin-bottom":"1em", "color":"red", "font-size":"20px"})
+                 .print()
+               ))
+         ,
+         newText("escolaridade", "<b>2) Education (highest degree completed)</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("escolaridadeResposta", "<p style=font-size:20>No schooling</p>", "<p style=font-size:20>Some elementary school (unfinished)</p>", 
+                  "<p style=font-size:20>Completed elementary school</p>", "<p style=font-size:20>Some secondary/high school (unfinished)</p>",
+                  "<p style=font-size:20>Completed secondary/high school</p>", "<p style=font-size:20>Some technical, community college, CEGEP, Collège Classique (unfinished)</p>",
+                  "<p style=font-size:20>Completed technical, community college, CEGEP, Collège Classique</p>", "<p style=font-size:20>Some university (unfinished)</p>", 
+                  "<p style=font-size:20>Bachelor's degree</p>", "<p style=font-size:20>Master's degree</p>", "<p style=font-size:20>Professional degree or doctorate</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("proficiência", "<b>3) In the proficiency test, which level was given to you? (If your level is in between B1 and B2, please consider the lowest level)</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("proficiênciaResposta", "<p style=font-size:20>A1</p>", "<p style=font-size:20>A2</p>", 
+                  "<p style=font-size:20>B1</p>", "<p style=font-size:20>B2</p>",
+                  "<p style=font-size:20>C1</p>", "<p style=font-size:20>C2</p>", "<p style=font-size:20>I did not do a proficiency test</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("naturalidade", "<b>4) What is your nationality?</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("naturalidadeResposta", "<p style=font-size:20>Brazilian</p>", "<p style=font-size:20>Canadian</p>", 
+                  "<p style=font-size:20>Other</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("língua", "<b>5) What is your first language?</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("línguaResposta", "<p style=font-size:20>Brazilian Portuguese</p>", "<p style=font-size:20>English</p>", "<p style=font-size:20>French</p>" , "<p style=font-size:20>Other</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("inglês", "<b>6) Did you study English? For example, in English schools, English courses for the academic comunity, etc.? </b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("inglêsResposta", "<p style=font-size:20>Yes</p>", "<p style=font-size:20>No</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("tempo", "<b>7) If yes, for how long did you study English?</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("tempoResposta", "<p style=font-size:20>Less than two years</p>", "<p style=font-size:20>Between 2 and 4 years</p>", "<p style=font-size:20>Between 4 and 6 years</p>", "<p style=font-size:20>Between 6 and 8 years</p>", "<p style=font-size:20>More than 8 years</p>", "<p style=font-size:20>I did not study English as a second language</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("morou", "<b>8) Did you live in a country which English is the official language?</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("morouResposta", "<p style=font-size:20>Yes</p>", "<p style=font-size:20>No</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newText("letras", "<b>9) Have you ever studied linguistics at the undergraduate level?</b>")
+         .cssContainer({"margin-bottom":"1em"})
+         ,
+         newScale("letrasResposta", "<p style=font-size:20>Yes</p>", "<p style=font-size:20>No</p>")
+         .cssContainer({"margin-bottom":"1em"})
+         .labelsPosition("right")
+         .vertical()
+         .log()
+         .print()
+         .wait()
+         ,
+         newButton("botao3", "Next")
+         .center()
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .print()
+         .wait()
+)
+
+// CODE TO SAVE PARTICIPANT'S DATA - THE FOLLOWING CODE SHOULD BE INSERTED AFTER EACH TRIAL
+
+.log("ParticipantID", subjID);
+
+// INSTRUCTIONS 1
+
+newTrial("instructions1",
+         defaultText
+         .css("font-size", "25px")
+         .css("text-align", "justify")
+         .print()
+         ,
+         newText(" <b> Thank you for answering the questionnaire! </b>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> From this point onward, we will be discussing the experiment </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> During the experiment, please sit comfortably and, if necessary, keep a bottle of water close to you. Remember that once you start the experiment, you cannot pause it and must complete it in one session. You are free to stop at any moment, but please note that any data collected up to that point will be lost.<p> ")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> For this task, you will see a fixation cross in the middle of the screen. Whenever you press the <b> space bar </b> on the keyboard, a word will appear. Please try to read it as naturally as possible. </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> After reading the entire sentence, a question will appear on the screen. These images are abstractions based on the sentence. Please select the image that you believe best represents the sentence. </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> Let's do a trial so you can become familiar with the test. </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newButton("Next")
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .css("text-align", "justify")
+         .center()
+         .print()
+         .wait()
+)
+
+// CODING TO SAVE PARTICIPANT'S DATA
+
+.log("ParticipantID", subjID);
+
+// CODING FOR THE PRACTICE TRIAL
+
+Template("practice.csv", row =>
+           newTrial("practice",
+                    newController("DashedSentence", {
+                      s: row.sentence,
+                      display: "in place",
+                      blankText: "+"
+                    })
+                    .css("font-size", "35px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"10em"})
+                    .center()
+                    .print()
+                    .log()
+                    .wait()
+                    .remove()
+                    ,
+                    newText("perguntapractice","Which figure best represents the interpretation of the sentence that you have just read?")
+                    .css("font-size", "25px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"5em"})
+                    .center()
+                    .print()
+                    ,
+                    newImage("imga", row.imga)
+                    .size(200,200)
+                    ,
+                    newImage("imgb", row.imgb)
+                    .size(200,200)
+                    ,
+                    newCanvas("ladaAlado", 625, 225)
+                    .add(0, 0, getImage("imga"))
+                    .add(400, 0, getImage("imgb"))
+                    .center()
+                    .print()
+                    .log()
+                    ,
+                    newSelector("respostapractice")
+                    .add(getImage("imga"), getImage("imgb"))
+                    .frame("solid 3px blue")
+                    .log()
+                    ,
+                    newButton("botaopractice", "Next")
+                    .css("font-size", "20px")
+                    .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+                    .center()
+                    .print()
+                    .wait(getSelector("respostapractice")
+                          .test.selected()
+                          .failure(newText("failure", "Please, select one picture before clicking <b> Next </b>.")
+                                   .cssContainer({"margin-top": "1em", "color":"red"})
+                                   .center()
+                                   .print())
+                    )
+           )
+         
+         .log("ParticipantID", subjID)
+         .log("group", row.group)
+         .log("item", row.item)
+         .log("sentence", row.sentence)
+         .log("lexicon", row.lexicon)
+         .log("quantifier", row.quantifier)
+         .log("noun", row.noun)
+         .log("condition", row.condition)
+         .log("imga", row.imga)
+         .log("imgb", row.imgb)
+         
+);
+
+// CODING FOR INSTRUCTIONS 2
+
+newTrial("instructions2",
+         defaultText
+         .css("font-size", "25px")
+         .css("text-align", "justify")
+         .print()
+         ,
+         newText("From now on, you will be doing the experiment. Start it when you feel comfortable. The use of smarphone and any material is not necessary. Please turn off your cellphone to avoid distractions. ")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> <b>Important:</b> There are no right or wrong answers. Please try to read the sentences as naturally as possible, following your intuition. </p>")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newText(" <p> Click on <b>Next</b> to start the task. <p> ")
+         .center()
+         .css("text-align", "justify")
+         ,
+         newButton("Next")
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .css("text-align", "justify")
+         .center()
+         .print()
+         .wait()
+)
+
+// CODING TO SAVE PARTICIPANT'S DATA
+
+.log("ParticipantID", subjID);
+
+// CODING FOT THE TARGET SENTENCES
+
+Template("target.csv", row =>
+           newTrial("target",
+                    newController("DashedSentence", {
+                      s: row.sentence,
+                      display: "in place",
+                      blankText: "+"
+                    })
+                    .css("font-size", "35px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"10em"})
+                    .center()
+                    .print()
+                    .log()
+                    .wait()
+                    .remove()
+                    ,
+                    newText("perguntatarget","Which figure best represents the interpretation of the sentence that you have just read?")
+                    .css("font-size", "25px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"5em"})
+                    .center()
+                    .print()
+                    ,
+                    newImage("imga", row.imga)
+                    .size(200,200)
+                    ,
+                    newImage("imgb", row.imgb)
+                    .size(200,200)
+                    ,
+                    newCanvas("ladaAlado", 625, 225)
+                    .add(0, 0, getImage("imga"))
+                    .add(400, 0, getImage("imgb"))
+                    .center()
+                    .print()
+                    .log()
+                    ,
+                    newSelector("respostatarget")
+                    .add(getImage("imga"), getImage("imgb"))
+                    .frame("solid 3px blue")
+                    .log()
+                    ,
+                    newButton("botaotarget", "Next")
+                    .css("font-size", "20px")
+                    .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+                    .center()
+                    .print()
+                    .wait(getSelector("respostatarget")
+                          .test.selected()
+                          .failure(newText("failure", "Please, select one picture before clicking <b> Next </b>.")
+                                   .cssContainer({"margin-top": "1em", "color":"red"})
+                                   .center()
+                                   .print())
+                    )
+           )
+         
+         .log("ParticipantID", subjID)
+         .log("group", row.group)
+         .log("item", row.item)
+         .log("sentence", row.sentence)
+         .log("lexicon", row.lexicon)
+         .log("quantifier", row.quantifier)
+         .log("noun", row.noun)
+         .log("condition", row.condition)
+         .log("imga", row.imga)
+         .log("imgb", row.imgb)
+         
+);
+
+// CODING FOR THE DISTRACTORS
+
+Template("distractor.csv", row =>
+           newTrial("distractor",
+                    newController("DashedSentence", {
+                      s: row.sentence,
+                      display: "in place",
+                      blankText: "+"
+                    })
+                    .css("font-size", "35px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"10em"})
+                    .center()
+                    .print()
+                    .log()
+                    .wait()
+                    .remove()
+                    ,
+                    newText("perguntadistractor","Which figure best represents the interpretation of the sentence that you have just read?")
+                    .css("font-size", "25px")
+                    .cssContainer({"margin-top":"10em","margin-bottom":"5em"})
+                    .center()
+                    .print()
+                    ,
+                    newImage("imga", row.imga)
+                    .size(200,200)
+                    ,
+                    newImage("imgb", row.imgb)
+                    .size(200,200)
+                    ,
+                    newCanvas("ladaAlado", 625, 225)
+                    .add(0, 0, getImage("imga"))
+                    .add(400, 0, getImage("imgb"))
+                    .center()
+                    .print()
+                    .log()
+                    ,
+                    newSelector("respostadistractor")
+                    .add(getImage("imga"), getImage("imgb"))
+                    .frame("solid 3px blue")
+                    .log()
+                    ,
+                    newButton("botaodistractor", "Next")
+                    .css("font-size", "20px")
+                    .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+                    .center()
+                    .print()
+                    .wait(getSelector("respostadistractor")
+                          .test.selected()
+                          .failure(newText("failure", "Please, select one picture before clicking <b> Next </b>.")
+                                   .cssContainer({"margin-top": "1em", "color":"red"})
+                                   .center()
+                                   .print())
+                    )
+           )
+         
+         .log("ParticipantID", subjID)
+         .log("group", row.group)
+         .log("item", row.item)
+         .log("sentence", row.sentence)
+         .log("lexicon", row.lexicon)
+         .log("quantifier", row.quantifier)
+         .log("noun", row.noun)
+         .log("condition", row.condition)
+         .log("imga", row.imga)
+         .log("imgb", row.imgb)
+         
+);
+
+// FINAL SCREEN
+
+newTrial("finalscreen" ,
+         defaultText
+         .cssContainer({"font-size":"25px"})
+         ,
+         newText("<p> Thank you so much for taking part in our study! </p>")
+         .center()
+         .print()
+         ,
+         newText("<p><b> Your participant ID is: </b></p>")
+         .center()
+         .print()
+         ,
+         newText(subjID)
+         .center()
+         .print()
+         ,
+         newText("<p> Above, you can find your participant ID. Please keep this number with you. By clicking <b>'Finish'</b>, your data will be saved, and you will be allowed to leave the page. Thank you. </p>")
+         .css("text-align", "justify")
+         .center()
+         .print()
+         ,   
+         newButton("Finish")
+         .cssContainer({"margin-top":"3em","margin-bottom":"6em"})
+         .css("font-size", "20px")
+         .css("text-align", "justify")
+         .center()
+         .print()
+         .wait()
+);
+
+// END OF THE EXPERIMENT - PROGRAMMED IN 04/23/2024
+
+// The coding was update on 04/23/2024 after meetings at University of Toronto
+// Some target nouns were changed for its synonyms 
+// Some sentences were changed out of the critical region
+// The 'tcle' was replaced by the 'icf' and also the code was changed for the new html file
+// update on May 7th, 2024 - there were some changes on the questionnare specifically about schooling. New options included.
+
